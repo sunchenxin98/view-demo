@@ -14,6 +14,9 @@
 .tags-inner-scroll-body::-webkit-scrollbar {
     /*display: none;*/
 }
+.cruuent{
+    color:red;
+}
 </style>
 <template>
     <div class="layout"  style="background-color:rgb(239,239,240)">
@@ -79,46 +82,23 @@
 
 
         <Row type="flex" justify="start" class="code-row-bg ">
-            <Col :xs="23" :sm="16" :md="12" :lg="23" style="overflow:scroll;" class="tags-inner-scroll-body">
-                <Tag type="dot" closable color="green">标签二</Tag>
-                <Tag type="dot" closable color="yellow">标签三</Tag>
-                <Tag type="dot" closable color="default">标签三</Tag>
-                <Tag type="dot" closable color="blue">标签一</Tag>
-                <Tag type="dot" closable color="green">标签二</Tag>
-                <Tag type="dot" closable color="yellow">标签三</Tag>
-                <Tag type="dot" closable color="default">标签三</Tag>
-                <Tag type="dot" closable color="blue">标签一</Tag>
-                <Tag type="dot" closable color="green">标签二</Tag>
-                <Tag type="dot" closable color="yellow">标签三</Tag>
-                <Tag type="dot" closable color="default">标签三</Tag>
-                <Tag type="dot" closable color="yellow">标签三</Tag>
-                <Tag type="dot" closable color="green">标签二</Tag>
-                <Tag type="dot" closable color="yellow">标签三</Tag>
-                <Tag type="dot" closable color="green">标签二</Tag>
-                <Tag type="dot" closable color="yellow">标签三</Tag>
-                <Tag type="dot" closable color="default">标签三</Tag>
-                <Tag type="dot" closable color="yellow">标签三</Tag>
-                <Tag type="dot" closable color="green">标签二</Tag>
-                <Tag type="dot" closable color="yellow">标签三</Tag>
-                <Tag type="dot" closable color="green">标签二</Tag>
-                <Tag type="dot" closable color="yellow">标签三</Tag>
-                <Tag type="dot" closable color="default">标签三</Tag>
-                <Tag type="dot" closable color="yellow">标签三</Tag>
-                <Tag type="dot" closable color="green">标签二</Tag>
-                <Tag type="dot" closable color="yellow">标签三</Tag>
-            </Col>
-            <Col :xs="1" :sm="16" :md="12" :lg="1">
-                <Dropdown >
-                    <Button size="small" type="primary">
-                        标签选项
-                        <Icon type="arrow-down-b"></Icon>
-                    </Button>
-                    <DropdownMenu slot="list">
-                        <DropdownItem name="clearAll">关闭所有</DropdownItem>
-                        <DropdownItem name="clearOthers">关闭其他</DropdownItem>
-                    </DropdownMenu>
-                </Dropdown>
-             </Col>
+                <Col :xs="23" :sm="16" :md="12" :lg="23"  class="tags-inner-scroll-body" id="myData" >
+                     <Tag   type="dot" v-for="item in count" :key="item"  :name="item" closable @on-close="handleClose2"
+                            @click.native="linkTo(item)" :color="(item===currentPageName?'blue':'default')" >标签{{ item + 1 }} </Tag>
+
+                </Col>
+                <Col :xs="1" :sm="16" :md="12" :lg="1">
+                    <Dropdown  @on-click="handleTagsOption">
+                        <Button size="small" type="primary" @click="items">
+                            标签选项
+                            <Icon type="arrow-down-b"></Icon>
+                        </Button>
+                        <DropdownMenu slot="list">
+                            <DropdownItem name="clearAll" >关闭所有</DropdownItem>
+                            <DropdownItem name="clearOthers">关闭其他</DropdownItem>
+                        </DropdownMenu>
+                    </Dropdown>
+                 </Col>
         </Row>
 
 
@@ -130,6 +110,8 @@
             <Radio label="dark"></Radio>
             <Radio label="primary"></Radio>
             <router-view></router-view>
+
+            <Button icon="ios-plus-empty" type="dashed" size="small" @click="handleAdd">添加标签</Button>
         </RadioGroup>
     </div>
 </template>
@@ -140,14 +122,61 @@
         components: {Dropdown},
         data () {
             return {
-                theme1: 'light'
+                theme1: 'light',
+                count: [0, 1, 2],
+                currentPageName: -1
             };
+        },
+        watch: {
+
         },
         methods:{
             handleSelect(active) {
                 this.$router.push({path:'/index'+active});
                 console.log('/index'+active);
-            }
-        }
+            },
+            items() {
+                document.getElementById('myData').scrollLeft = document.getElementById('myData').scrollWidth;
+            },
+            handleClose2 (event, name) {
+                const index = this.count.indexOf(name);
+                this.count.splice(index, 1);
+            },
+            handleAdd () {
+                if (this.count.length) {
+                    this.count.push(this.count[this.count.length - 1] + 1);
+                } else {
+                    this.count.push(0);
+                }
+
+            },
+            linkTo(item) {
+                this.currentPageName=item;
+                console.log();
+                //console.log(item);
+            },
+            handleTagsOption (type) {
+                if (type === 'clearAll') {
+                    this.count=[];
+                    this.currentPageName=-1;
+                } else if(this.currentPageName===-1){
+                    this.count=[];
+                }else{
+                    this.count=[];
+                    this.count.push(this.currentPageName);
+                }
+                this.tagBodyLeft = 0;
+            },
+        },
+        beforeUpdate() {
+            //alert('更新前状态');
+            //console.group('beforeUpdate 更新前状态===============》'); //这里指的是页面渲染新数据之前
+
+        },updated() {
+            //console.group('updated 更新完成状态===============》');
+            this.items();
+            //document.getElementById('myData').scrollLeft = document.getElementById('myData').scrollWidth;
+        },
+
     };
 </script>
