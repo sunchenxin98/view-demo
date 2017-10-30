@@ -9,6 +9,14 @@ export const loginRouter = {
     component: resolve => { require(['./views/login.vue'], resolve); }
 };
 
+export const regRouter = {
+    path: '/register',
+    name: 'register',
+    meta: {
+        title: '注册'
+    },
+    component: resolve => { require(['./views/register.vue'], resolve); }
+};
 export const page404 = {
     path: '/*',
     name: 'error_404',
@@ -67,6 +75,7 @@ export const appRouter = [
 // 所有上面定义的路由都要写在下面的routers里
 export const routers = [
     loginRouter,
+    regRouter,
     ...appRouter,
     page500,
     page401,
